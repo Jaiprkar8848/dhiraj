@@ -1,25 +1,19 @@
-EXEC_PREFIX = exec
-TIME_CMD = /usr/bin/time -f "\nTime: %e seconds\nMemory: %M KB"
-NODES = 500 600 700 800 900 1000
-ALGORITHMS = DFS BFS REC_DFS
+TIME_CMD = /usr/bin/time -f "\nTime_Taken: %e seconds\nMemory_Used: %M KB"
+VERTICES = 400 600 800 1000 1200 
+ALGO = RECURSIVE_DFS DFS BFS 
 
-problem1 : $(ALGORITHMS) clean
+prob1 : $(ALGO)
 
-$(ALGORITHMS) :
+$(ALGO) :
 	@echo "Compiling with -D$@"
-	@g++ -D$@ -DVARM Prob1.cpp -o $(EXEC_PREFIX)_$@
-	@for N in $(NODES); do \
-		echo "Running $@ with N=$$N"; \
-		$(TIME_CMD) ./$(EXEC_PREFIX)_$@ $$N 2>>$@_time.txt; \
+	@g++ -D$@ -DGENERATE_VARM Prob1Changed.cpp -o EXEC_$@
+	@for V in $(VERTICES); do \
+		echo "Running $@ with V=$$V"; \
+		$(TIME_CMD) ./EXEC_$@ $$V 2>>$@_time.txt; \
 	done
-	@echo "Calculating Average Time and Memory..."
-	@grep 'Time:' $@_time.txt >> $@_time.tmp
-	@grep 'Memory:' $@_time.txt >> $@_memory.tmp
-	@awk '{totalTime+=$$2;timeCount++} END {print "Average_Time: " totalTime/timeCount}' $@_time.tmp >> $@_avg_time.txt
-	@awk '{totalMemory+=$$2;memoryCount++} END {print "Average_Memory: " totalMemory/memoryCount}' $@_memory.tmp >> $@_avg_time.txt
-
-clean :
-	@echo "Cleaning generated files..."
-	@rm -f *_time.tmp *_memory.tmp $(EXEC_PREFIX)_*
-
-
+	@echo "Calculating Average Time and Average Memory :"
+	@grep 'Time_Taken:' $@_time.txt >> $@_time.tmp
+	@awk '{totalT+=$$2;tcount++} END {print "Average_Time: " totalT/tcount}' $@_time.tmp >> $@_average_time.txt
+	@grep 'Memory_Used:' $@_time.txt >> $@_memory.tmp
+	@awk '{totalM+=$$2;mcount++} END {print "Average_Memory: " totalM/mcount}' $@_memory.tmp >> $@_average_time.txt
+	@rm -f $@time.tmp $@_memory.tmp EXEC$@
